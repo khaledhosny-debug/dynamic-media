@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Marketing OS - Final Planner</title>
+<style>
+body{margin:0;background:#0a0d12;color:#fff;font-family:Segoe UI,Tahoma}
+.header{padding:20px 30px;background:#111827;border-bottom:1px solid #2a313b}
+.header h1{margin:0}
+.layout{display:grid;grid-template-columns:340px 1fr 320px;gap:18px;padding:18px}
+.card{background:#141a22;border:1px solid #2a313b;border-radius:18px;padding:18px}
+label{display:block;color:#9aa4b2;font-size:13px;margin:8px 0 5px}
+input,select{width:100%;padding:10px;border-radius:10px;background:#0f1318;color:#fff;border:1px solid #2a313b}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.kpi{background:#0f1318;border-radius:12px;padding:14px}
+.big{font-size:28px;font-weight:800}
+.ok{color:#4ade80}.bad{color:#f87171}
+table{width:100%;border-collapse:collapse}
+th,td{padding:10px;border-bottom:1px solid #2a313b}
+.section{margin-top:16px}
+</style>
+</head>
+<body>
+<div class="header"><h1 id="planTitle">AI Media Planner</h1></div>
+
+<div class="layout">
+
+<div class="card">
+<h2>Client Brief</h2>
+
+<label>Account Name</label>
+<input id="account" value="WAHAAD">
+
+<label>Industry</label>
+<select id="industry">
+<option>Fashion</option><option>Cosmetics</option><option>Perfumes</option>
+<option>Electronics</option><option>Furniture</option><option>Real Estate</option>
+<option>Consultation</option><option>Clinic</option><option>Restaurant</option>
+<option>Coffee Shop</option><option>Travel Agency</option><option>Tourism</option>
+</select>
+
+<label>Goal</label>
+<select id="goal">
+<option>Purchases</option><option>Leads</option><option>Traffic</option>
+<option>Awareness</option><option>Engagement</option><option>App Installs</option>
+<option>WhatsApp</option><option>Calls</option>
+</select>
+
+<label>Country</label>
+<select id="country"><option>Saudi Arabia</option><option>UAE</option></select>
+
+<label>Budget</label>
+<input id="budget" value="100000">
+
+<label>AOV</label>
+<input id="aov" value="350">
+
+<label>Primary KPI</label>
+<select id="kpi"><option>ROAS</option><option>CPL</option><option>CPA</option><option>CPM</option></select>
+
+<label>Target KPI</label>
+<input id="target" value="4">
+</div>
+
+<div>
+<div class="card">
+<div class="kpis">
+<div class="kpi"><div>Budget</div><div class="big" id="b"></div></div>
+<div class="kpi"><div>Forecast</div><div class="big" id="f"></div></div>
+<div class="kpi"><div>Volume</div><div class="big" id="v"></div></div>
+<div class="kpi"><div>KPI</div><div class="big" id="k"></div></div>
+</div>
+</div>
+
+<div class="card section">
+<h2>Platform Allocation</h2>
+<div>
+<label>Snapchat %</label><input id="snap" value="45">
+<label>Google %</label><input id="google" value="30">
+<label>Meta %</label><input id="meta" value="20">
+<label>TikTok %</label><input id="tiktok" value="5">
+<h3 id="total"></h3>
+</div>
+<table id="platformTable"></table>
+</div>
+
+<div class="card section">
+<h2>Campaign Planner</h2>
+<table id="campaigns"></table>
+</div>
+</div>
+
+<div class="card">
+<h2>Forecast & Audience</h2>
+<div id="forecast"></div>
+<hr>
+<h3>Audience</h3>
+<div id="audience"></div>
+<hr>
+<h3>Geo</h3>
+<div id="geo"></div>
+</div>
+
+</div>
+
+<script>
+function update(){
+let budget=+budgetEl.value||0;
+let target=+targetEl.value||4;
+let aov=+aovEl.value||350;
+
+planTitle.innerText=account.value+" | "+industry.value+" | "+goal.value;
+
+b.innerText=budget.toLocaleString();
+k.innerText=target;
+
+if(goal.value==="Purchases"){
+ let rev=budget*target;
+ f.innerText=Math.round(rev).toLocaleString();
+ v.innerText=Math.round(rev/aov);
+ forecast.innerHTML="Expected Revenue: "+Math.round(rev).toLocaleString();
+}else{
+ let leads=Math.round(budget/25);
+ f.innerText=leads;
+ v.innerText="Leads";
+ forecast.innerHTML="Expected Leads: "+leads;
+}
+
+let s=+snap.value||0,g=+google.value||0,m=+meta.value||0,t=+tiktok.value||0;
+let sum=s+g+m+t;
+total.innerHTML="Total Allocation = "+sum+"%";
+total.className=sum===100?"ok":"bad";
+
+platformTable.innerHTML=`<tr><th>Platform</th><th>%</th><th>Budget</th></tr>
+<tr><td>Snapchat</td><td>${s}%</td><td>${Math.round(budget*s/100).toLocaleString()}</td></tr>
+<tr><td>Google</td><td>${g}%</td><td>${Math.round(budget*g/100).toLocaleString()}</td></tr>
+<tr><td>Meta</td><td>${m}%</td><td>${Math.round(budget*m/100).toLocaleString()}</td></tr>
+<tr><td>TikTok</td><td>${t}%</td><td>${Math.round(budget*t/100).toLocaleString()}</td></tr>`;
+
+campaigns.innerHTML=`<tr><th>Platform</th><th>Campaign</th><th>Budget</th></tr>
+<tr><td>Snapchat</td><td>Broad</td><td>${Math.round(budget*s/100*0.7).toLocaleString()}</td></tr>
+<tr><td>Snapchat</td><td>Retargeting</td><td>${Math.round(budget*s/100*0.3).toLocaleString()}</td></tr>
+<tr><td>Google</td><td>PMax</td><td>${Math.round(budget*g/100).toLocaleString()}</td></tr>
+<tr><td>Meta</td><td>Catalog/Broad</td><td>${Math.round(budget*m/100).toLocaleString()}</td></tr>`;
+
+const map={Fashion:"Fashion, Shopping, Lifestyle",Cosmetics:"Beauty, Makeup",RealEstate:"Property"};
+audience.innerHTML=(map[industry.value]||"Broad Audience");
+geo.innerHTML=country.value==="Saudi Arabia"?"Riyadh • Jeddah • Dammam":"Dubai • Abu Dhabi • Sharjah";
+}
+const account=document.getElementById('account');
+const industry=document.getElementById('industry');
+const goal=document.getElementById('goal');
+const budgetEl=document.getElementById('budget');
+const aovEl=document.getElementById('aov');
+const targetEl=document.getElementById('target');
+document.querySelectorAll('input,select').forEach(x=>x.addEventListener('input',update));
+update();
+</script>
+</body>
+</html>
